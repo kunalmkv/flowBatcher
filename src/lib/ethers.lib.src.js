@@ -6,11 +6,10 @@
  * This module helps streamline the process of sending batch transactions, ensuring that multiple transfers are executed in a single batch, which reduces gas fees and transaction complexity.
  */
 
-
 const { ethers } = require("ethers")
 const generalUseUtil = require("../utils/general.use.utils")
-const validatorUtil= require("../utils/validators.utils")
-const errorUtil= require("../utils/error.utils")
+const validatorUtil = require("../utils/validators.utils")
+const errorUtil = require("../utils/error.utils")
 const globalKeysEnum = require("../enumS/global.keys.enum")
 const loggerLib = require("./logger.lib")
 const loggerColourEnum = require("../enums/logger.colours.enum")
@@ -29,16 +28,20 @@ const loggerColourEnum = require("../enums/logger.colours.enum")
  * @returns {ethers.Wallet} signer - The signer to sign and send transactions.
  */
 function createProviderAndSigner(rpcUrl, privateKey) {
-  try{
-    if(validatorUtil.isEmpty(rpcUrl) ||validatorUtil.isEmpty(privateKey)){
-      loggerLib.logWithColor("RPC URL or Private Key is empty!", loggerColourEnum.ERR)
-      errorUtil.throwError(`RPC URL: ${rpcUrl} or Private Key : ${privateKey} is empty!`)
-
+  try {
+    if (validatorUtil.isEmpty(rpcUrl) || validatorUtil.isEmpty(privateKey)) {
+      loggerLib.logWithColor(
+        "RPC URL or Private Key is empty!",
+        loggerColourEnum.ERR,
+      )
+      errorUtil.throwError(
+        `RPC URL: ${rpcUrl} or Private Key : ${privateKey} is empty!`,
+      )
     }
     const provider = new ethers.JsonRpcProvider(rpcUrl)
     const signer = new ethers.Wallet(privateKey, provider)
     return { provider, signer }
-  }catch (e) {
+  } catch (e) {
     throw e
   }
 }
@@ -56,15 +59,24 @@ function createProviderAndSigner(rpcUrl, privateKey) {
  * @returns {ethers.Contract} - The contract instance for interacting with the Ethereum contract.
  */
 function createContract(signer, contractAddress, abi) {
-try{
-  if(validatorUtil.isEmpty(signer) || validatorUtil.isEmpty(contractAddress) || validatorUtil.isEmpty(abi)){
-    loggerLib.logWithColor("Signer, Contract Address or ABI is empty!", loggerColourEnum.ERR)
-    errorUtil.throwError(`Signer: ${signer} , Contract Address : ${contractAddress} or ABI : ${abi} is empty!`)
+  try {
+    if (
+      validatorUtil.isEmpty(signer) ||
+      validatorUtil.isEmpty(contractAddress) ||
+      validatorUtil.isEmpty(abi)
+    ) {
+      loggerLib.logWithColor(
+        "Signer, Contract Address or ABI is empty!",
+        loggerColourEnum.ERR,
+      )
+      errorUtil.throwError(
+        `Signer: ${signer} , Contract Address : ${contractAddress} or ABI : ${abi} is empty!`,
+      )
+    }
+    return new ethers.Contract(contractAddress, abi, signer)
+  } catch (e) {
+    throw e
   }
-  return new ethers.Contract(contractAddress, abi, signer)
-}catch (e) {
-  throw e
-}
 }
 
 /**
@@ -80,21 +92,29 @@ try{
  * @returns {Promise} - A promise that resolves when the transaction is mined, returning the transaction details.
  */
 async function approveTokens(spender, amount) {
-  try{
-    if(validatorUtil.isEmpty(spender) || validatorUtil.isEmpty(amount)){
-      loggerLib.logWithColor("Spender or Amount is empty!", loggerColourEnum.ERR)
-      errorUtil.throwError(`Spender: ${spender} or Amount : ${amount} is empty!`)
+  try {
+    if (validatorUtil.isEmpty(spender) || validatorUtil.isEmpty(amount)) {
+      loggerLib.logWithColor(
+        "Spender or Amount is empty!",
+        loggerColourEnum.ERR,
+      )
+      errorUtil.throwError(
+        `Spender: ${spender} or Amount : ${amount} is empty!`,
+      )
     }
     const erc20Contract = generalUseUtil.getGlobalKey(
-        globalKeysEnum.ERC20_CONTRACT,
+      globalKeysEnum.ERC20_CONTRACT,
     )
     const decimals = await erc20Contract.decimals() // Get token decimals
     const parsedAmount = ethers.parseUnits(amount.toString(), decimals) // Convert the amount to the correct units
     const transaction = await erc20Contract.approve(spender, parsedAmount) // Call the approve function on the contract
     await transaction.wait() // Wait for the transaction to be mined
-    loggerLib.logWithColor("Tokens approved successfully!", loggerColourEnum.INFO)
+    loggerLib.logWithColor(
+      "Tokens approved successfully!",
+      loggerColourEnum.INFO,
+    )
     return transaction
-  }catch (e) {
+  } catch (e) {
     throw e
   }
 }
@@ -121,61 +141,61 @@ async function executeBatchTransactions(
   try {
     if (validatorUtil.isEmpty(recipients) || validatorUtil.isEmpty(amounts)) {
       loggerLib.logWithColor(
-          "Recipients or Amounts is empty!",
-          loggerColourEnum.ERR,
+        "Recipients or Amounts is empty!",
+        loggerColourEnum.ERR,
       )
       errorUtil.throwError(
-          `Recipients: ${recipients} or Amounts : ${amounts} is empty!`,
+        `Recipients: ${recipients} or Amounts : ${amounts} is empty!`,
       )
     }
     let transaction
     const batchTransferContract = generalUseUtil.getGlobalKey(
-        globalKeysEnum.BATCH_TRANSFER_CONTRACT,
+      globalKeysEnum.BATCH_TRANSFER_CONTRACT,
     )
 
     if (validatorUtil.isEmpty(isNative)) {
       const erc20Contract = generalUseUtil.getGlobalKey(
-          globalKeysEnum.ERC20_CONTRACT,
+        globalKeysEnum.ERC20_CONTRACT,
       )
       const decimals = await erc20Contract.decimals()
       const parsedAmounts = amounts.map((a) =>
-          ethers.parseUnits(a.toString(), decimals),
+        ethers.parseUnits(a.toString(), decimals),
       )
 
       const transaction = await batchTransferContract.batchTransfer(
-          recipients,
-          parsedAmounts,
-          tokenAddress,
+        recipients,
+        parsedAmounts,
+        tokenAddress,
       )
       loggerLib.logWithColor(
-          `Batch ERC-20 Transfer transaction hash: ${transaction.hash}`,
-          loggerColourEnum.INFO,
+        `Batch ERC-20 Transfer transaction hash: ${transaction.hash}`,
+        loggerColourEnum.INFO,
       )
       await transaction.wait()
       loggerLib.logWithColor(
-          "✅ ERC-20 Batch Transfer completed!",
-          loggerColourEnum.INFO,
+        "✅ ERC-20 Batch Transfer completed!",
+        loggerColourEnum.INFO,
       )
     } else {
       const parsedAmounts = amounts.map((a) => ethers.parseEther(a.toString()))
       const totalAmount = parsedAmounts.reduce(
-          (sum, val) => sum + val,
-          ethers.parseEther("0"),
+        (sum, val) => sum + val,
+        ethers.parseEther("0"),
       )
       transaction = await batchTransferContract.batchTransfer(
-          recipients,
-          parsedAmounts,
-          ethers.ZeroAddress,
-          {value: totalAmount},
+        recipients,
+        parsedAmounts,
+        ethers.ZeroAddress,
+        { value: totalAmount },
       )
       loggerLib.logWithColor(
-          `Batch Native Transfer transaction hash: ${transaction.hash}`,
-          loggerColourEnum.INFO,
+        `Batch Native Transfer transaction hash: ${transaction.hash}`,
+        loggerColourEnum.INFO,
       )
       await transaction.wait()
       loggerLib.logWithColor(
-          "✅ Native Batch Transfer completed!",
-          loggerColourEnum.INFO,
+        "✅ Native Batch Transfer completed!",
+        loggerColourEnum.INFO,
       )
     }
     return transaction
