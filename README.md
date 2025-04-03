@@ -1,10 +1,12 @@
 # flowBatcher SDK
 
 ## Overview
-This SDK simplifies the process of transferring ###ERC-20 tokens and native ###Ethereum (ETH) to multiple recipients in a single transaction. By bundling transactions, it helps save on gas fees and improves transaction efficiency.
+This SDK simplifies the process of transferring ERC-20 tokens and native Ethereum (ETH) to multiple recipients in a single transaction. By bundling transactions, it helps save on gas fees and improves transaction efficiency.
 
 ## Problem Statement
 Transferring tokens or native Ethereum (ETH) to multiple addresses is often inefficient and costly, especially when multiple transactions incur separate gas fees. This SDK optimizes the process by allowing batch transfers of tokens and ETH in a single operation, making it more cost-effective and convenient.
+
+
 ![flowBatcher Image](src/images/flowDiagram.png)
 
 
@@ -21,6 +23,27 @@ Transferring tokens or native Ethereum (ETH) to multiple addresses is often inef
 - **Gas Estimation**: Calculate the gas required for the batch transfer.
 - **User Interaction**: Confirm the transfer before executing to ensure control over large transactions.
 - **Cross-platform Support**: Works with both ERC-20 tokens and native Ethereum (ETH).
+
+## Security Enhancements
+### **Reentrancy Guard**
+- Implemented `ReentrancyGuard` from OpenZeppelin to prevent **reentrancy attacks**, especially for native Ether transfers.
+- The `nonReentrant` modifier ensures the batch transfer function cannot be called recursively, protecting against vulnerabilities.
+
+### **ETH Transfer Validation**
+- The contract verifies that the total **Ether sent (`msg.value`) matches the expected sum** of amounts.
+- If the user sends more or less ETH than required, the transaction is **reverted** to prevent errors or fund loss.
+
+## Efficiency Enhancements
+### **Optimized Token Transfer**
+- Instead of using `transferFrom` (which requires prior approval), the contract **uses `transfer` when the contract itself is the sender**, reducing gas costs.
+- `IERC20(token).transferFrom(msg.sender, recipients[i], amounts[i]);` was changed to `token.transferFrom(msg.sender, recipients[i], amounts[i]);`.
+
+### **Helper Function (sumAmounts)**
+- A helper function, `sumAmounts`, efficiently calculates the total ETH amount in the batch transfer.
+- **Avoids redundant computations** in the main function, reducing gas consumption.
+
+### **Gas Optimization**
+- By **precomputing the sum of amounts** in the `sumAmounts` helper function, unnecessary operations in the main loop are avoided, **enhancing efficiency**.
 
 ## Functionality
 ### `batchTransferERC20(recipients, amounts)`
@@ -40,7 +63,20 @@ const recipients = ["0xRecipient1", "0xRecipient2"];
 const amounts = [10, 5];
 await sdk.batchTransferERC20(recipients, amounts);
 ```
+## Response Sample
+```javascript
+{
+  date: '4/4/2025, 2:53:07 AM',
+          message: '🚨 GAS FEE ESTIMATE FOR Eth BATCH TRANSFER: \n' +
+  '         - Estimated Gas: 71857  \n' +
+  '         - Gas Price (gwei): 0.01444276\n' +
+  '          - Estimated Cost (ETH): 0.00000103781340532\n' +
+  '           - Estimated Cost (USD): 0.001869465177673182',
+          data: {}
+}
 
+Proceed with Eth Batch Transfer? (yes/no):
+````
 ### `batchTransferNative(recipients, amounts)`
 Transfers native ETH to multiple recipients in one batch transaction.
 
@@ -72,11 +108,21 @@ Estimates the gas fees for the batch transfer of ERC-20 tokens or native ETH.
 - **Success**: Returns the estimated gas, gas price, and cost in both ETH and USD.
 - **Error**: Throws an error if gas estimation fails.
 
-#### Example:
+## Response Sample
 ```javascript
-const gasEstimate = await estimateGasFees(recipients, amounts, tokenAddress, true);
-console.log(gasEstimate);
-```
+{
+  date: '4/4/2025, 2:53:07 AM',
+          message: '🚨 GAS FEE ESTIMATE FOR ERC-20 BATCH TRANSFER: \n' +
+  '         - Estimated Gas: 71857  \n' +
+  '         - Gas Price (gwei): 0.01444276\n' +
+  '          - Estimated Cost (ETH): 0.00000103781340532\n' +
+  '           - Estimated Cost (USD): 0.001869465177673182',
+          data: {}
+}
+
+Proceed with ERC-20 Batch Transfer? (yes/no):
+````
+
 
 ## Smart Contracts Used in the SDK
 ### **1. Batch Transfer Contract (ERC-20 and ETH)**
@@ -156,7 +202,6 @@ const sdk = new SDK(provider, signer, config);
   "error": "Invalid recipients or amounts"
 }
 ```
-
 ## License
 This SDK is open-source and available under the MIT License.
 
