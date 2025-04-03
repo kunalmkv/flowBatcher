@@ -1,0 +1,36 @@
+Transferring tokens and native Ethereum (ETH) across multiple recipients can be a tedious and expensive process when done individually. With multiple gas fees for each transaction, it becomes inefficient and costly.
+
+The Ethereum Batch Transfer SDK solves this problem by enabling batch transfers of ERC-20 tokens and native Ethereum (ETH) in one single transaction, thereby reducing transaction costs and gas fees. It provides a unified API to send multiple transactions to different addresses, making it easy to send tokens or ETH to multiple users at once.
+Features
+Batch Transfer of ERC-20 Tokens: Send ERC-20 tokens to multiple recipients with a single transaction.
+
+Batch Transfer of Native ETH: Transfer ETH to multiple addresses in one transaction.
+
+Gas Estimation: Estimate gas fees for batch transfers in both ETH and ERC-20 tokens.
+
+User Confirmation: Prompt the user to confirm the transfer before executing, ensuring control over large transactions.
+System Diagram & Flow
+Batch Transfer SDK Flow
+Here’s a flow diagram of how the SDK works:
+
+User provides recipient addresses and amounts for either ERC-20 tokens or ETH.
+
+Gas Estimation: The SDK estimates the gas fees for the batch transfer.
+
+User Confirmation: The user is asked for confirmation to proceed with the transfer.
+
+Token Approval (if needed): The ERC-20 tokens are approved before proceeding with the transfer.
+
+Batch Transfer Execution: The SDK sends the batch transfer to all recipients in a single transaction.
+
+Flow chart
+  +---------------------+      +------------------------+      +----------------------+
+  | User provides       |      | Gas estimation         |      | User confirms the    |
+  | recipients & amounts|----->| for batch transfer     |----->| transfer or cancels  |
+  +---------------------+      +------------------------+      +----------------------+
+            |                           |
+            v                           v
+  +---------------------+      +------------------------+
+  | Approve tokens if   |      | Execute batch transfer |
+  | needed              |----->| to recipients          |
+  +---------------------+      +------------------------+
