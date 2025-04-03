@@ -6,9 +6,7 @@ This SDK simplifies the process of transferring ERC-20 tokens and native Ethereu
 ## Problem Statement
 Transferring tokens or native Ethereum (ETH) to multiple addresses is often inefficient and costly, especially when multiple transactions incur separate gas fees. This SDK optimizes the process by allowing batch transfers of tokens and ETH in a single operation, making it more cost-effective and convenient.
 
-
-![flowBatcher Image](src/images/flowDiagram.png)
-
+![flowBatcher Image](src/images/flowBatcher.png)
 
 ## System Flow
 1. **User Inputs**: The user provides recipient addresses and amounts of ERC-20 tokens or ETH.
@@ -25,35 +23,34 @@ Transferring tokens or native Ethereum (ETH) to multiple addresses is often inef
 - **Cross-platform Support**: Works with both ERC-20 tokens and native Ethereum (ETH).
 
 ## Security Enhancements
-### **Reentrancy Guard**
-- Implemented `ReentrancyGuard` from OpenZeppelin to prevent **reentrancy attacks**, especially for native Ether transfers.
-- The `nonReentrant` modifier ensures the batch transfer function cannot be called recursively, protecting against vulnerabilities.
-
-### **ETH Transfer Validation**
-- The contract verifies that the total **Ether sent (`msg.value`) matches the expected sum** of amounts.
-- If the user sends more or less ETH than required, the transaction is **reverted** to prevent errors or fund loss.
+- **Reentrancy Guard**: 
+  - The contract uses OpenZeppelin's `ReentrancyGuard` to prevent reentrancy attacks.
+  - The `nonReentrant` modifier ensures batch transfers cannot be called in a reentrant manner.
+- **ETH Transfer Validation**:
+  - The contract verifies that the total Ether sent (`msg.value`) matches the sum of amounts.
+  - This prevents accidental overpayment or underpayment.
+- **Token Transfer Optimization**:
+  - Instead of using `transferFrom`, the contract directly calls `transfer` when it's the sender to save gas.
+  - Example: `IERC20(token).transferFrom(msg.sender, recipients[i], amounts[i]);` was optimized to `token.transferFrom(msg.sender, recipients[i], amounts[i]);`.
+- **Helper Function (`sumAmounts`)**:
+  - Calculates the total ETH being sent in a batch, reducing redundancy and improving efficiency.
 
 ## Efficiency Enhancements
-### **Optimized Token Transfer**
-- Instead of using `transferFrom` (which requires prior approval), the contract **uses `transfer` when the contract itself is the sender**, reducing gas costs.
-- `IERC20(token).transferFrom(msg.sender, recipients[i], amounts[i]);` was changed to `token.transferFrom(msg.sender, recipients[i], amounts[i]);`.
-
-### **Helper Function (sumAmounts)**
-- A helper function, `sumAmounts`, efficiently calculates the total ETH amount in the batch transfer.
-- **Avoids redundant computations** in the main function, reducing gas consumption.
-
-### **Gas Optimization**
-- By **precomputing the sum of amounts** in the `sumAmounts` helper function, unnecessary operations in the main loop are avoided, **enhancing efficiency**.
+- **Gas Optimization**:
+  - Instead of repeatedly summing amounts inside loops, a separate helper function precomputes the total amount.
+  - This reduces the computational cost of the main function.
+- **Reduced Redundant Calls**:
+  - By minimizing external contract calls and ensuring efficient batching, gas fees are further reduced.
 
 ## Functionality
-## `batchTransferERC20(recipients, amounts)`
+### `batchTransferERC20(recipients, amounts)`
 Transfers ERC-20 tokens to multiple recipients in a single transaction.
 
 #### Parameters:
 - `recipients`: Array of recipient addresses.
 - `amounts`: Array of amounts to send to each recipient.
 
-##### Response:
+#### Response:
 - **Success**: Returns the transaction hash and logs completion.
 - **Error**: Throws an error if invalid recipients or amounts are provided.
 
@@ -63,21 +60,8 @@ const recipients = ["0xRecipient1", "0xRecipient2"];
 const amounts = [10, 5];
 await sdk.batchTransferERC20(recipients, amounts);
 ```
-#### Response Sample
-```javascript
-{
-  date: '4/4/2025, 2:53:07 AM',
-          message: '🚨 GAS FEE ESTIMATE FOR Eth BATCH TRANSFER: \n' +
-  '         - Estimated Gas: 71857  \n' +
-  '         - Gas Price (gwei): 0.01444276\n' +
-  '          - Estimated Cost (ETH): 0.00000103781340532\n' +
-  '           - Estimated Cost (USD): 0.001869465177673182',
-          data: {}
-}
 
-Proceed with Eth Batch Transfer? (yes/no):
-````
-## `batchTransferNative(recipients, amounts)`
+### `batchTransferNative(recipients, amounts)`
 Transfers native ETH to multiple recipients in one batch transaction.
 
 #### Parameters:
@@ -95,7 +79,7 @@ const amounts = [0.1, 0.2];
 await sdk.batchTransferNative(recipients, amounts);
 ```
 
-## `estimateGasFees(recipients, amounts, tokenAddress, isNative)`
+### `estimateGasFees(recipients, amounts, tokenAddress, isNative)`
 Estimates the gas fees for the batch transfer of ERC-20 tokens or native ETH.
 
 #### Parameters:
@@ -104,91 +88,14 @@ Estimates the gas fees for the batch transfer of ERC-20 tokens or native ETH.
 - `tokenAddress`: The ERC-20 token address (use `ethers.ZeroAddress` for ETH).
 - `isNative`: Boolean to specify if the transfer is native ETH.
 
-##### Response:
+#### Response:
 - **Success**: Returns the estimated gas, gas price, and cost in both ETH and USD.
 - **Error**: Throws an error if gas estimation fails.
 
-#### Response Sample
+#### Example:
 ```javascript
-{
-  date: '4/4/2025, 2:53:07 AM',
-          message: '🚨 GAS FEE ESTIMATE FOR ERC-20 BATCH TRANSFER: \n' +
-  '         - Estimated Gas: 71857  \n' +
-  '         - Gas Price (gwei): 0.01444276\n' +
-  '          - Estimated Cost (ETH): 0.00000103781340532\n' +
-  '           - Estimated Cost (USD): 0.001869465177673182',
-          data: {}
-}
-
-Proceed with ERC-20 Batch Transfer? (yes/no):
-````
-
-
-## Getting Started
-### Installation
-To use the Ethereum Batch Transfer SDK, follow these steps:
-
-#### **Clone the Repository:**
-```bash
-git clone https://github.com/your-username/ethereum-batch-transfer-sdk.git
-cd ethereum-batch-transfer-sdk
-```
-
-#### **Install Dependencies:**
-```bash
-npm install
-```
-
-#### **Set up Environment Variables:**
-Create a `.env` file in the root of the project with your Ethereum node URL and wallet private key:
-```plaintext
-ETH_NODE_URL=https://your-ethereum-node-url
-WALLET_PRIVATE_KEY=your-private-key
-```
-
-## Example Usage
-```javascript
-require("dotenv").config({ path: "./.env" });
-const { createProviderAndSigner } = require("./src/lib/ethers.lib.src");
-const SDK = require("./src/sdk");
-const config = require("./src/config");
-const validatorsUtil = require("./src/utils/validators.utils");
-
-const { provider, signer } = createProviderAndSigner(
-  process.env.ETH_NODE_URL,
-  process.env.WALLET_PRIVATE_KEY
-);
-
-const sdk = new SDK(provider, signer, config);
-
-(async () => {
-  try {
-    const recipients = [
-      "0x93297d48A40446dc84a388BB94F3A1247CB74870",
-      "0x50da5C365a08169A9101C1969492540dA937071F",
-    ];
-    const amounts = [1, 2];
-    await sdk.batchTransferERC20(recipients, amounts);
-  } catch (error) {
-    throw error;
-  }
-})();
-```
-
-## Function Responses
-### `batchTransferERC20(recipients, amounts)`
-#### **Success:**
-```json
-{
-  "txHash": "0xFakeTxHash",
-  "message": "✅ ERC-20 Batch Transfer completed!"
-}
-```
-#### **Error:**
-```json
-{
-  "error": "Invalid recipients or amounts"
-}
+const gasEstimate = await estimateGasFees(recipients, amounts, tokenAddress, true);
+console.log(gasEstimate);
 ```
 
 ## Coding Practices
@@ -201,7 +108,7 @@ const sdk = new SDK(provider, signer, config);
 ## Coding Standards & Dependencies
 - **Coding Standards**:
   - Uses modern JavaScript (ES6+).
-  - Consistent naming conventions (`camelCase` for variables).
+  - Consistent naming conventions (`camelCase` for variables, `PascalCase` for classes).
   - Modular functions for improved maintainability.
 - **Key Dependencies**:
   - `ethers`: Used for blockchain interactions.
@@ -209,7 +116,10 @@ const sdk = new SDK(provider, signer, config);
   - `eslint`, `prettier`: Code quality tools.
   - `mocha`, `chai`, `sinon`: Testing libraries.
   - `dotenv`: Manages environment variables.
-  - 
+- **Build Tools**:
+  - `rollup`: Used for bundling the SDK.
+  - Plugins like `@rollup/plugin-node-resolve`, `@rollup/plugin-commonjs`, and `@rollup/plugin-json` ensure smooth module resolution.
+
 ## License
 This SDK is open-source and available under the MIT License.
 
