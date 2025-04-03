@@ -1,3 +1,64 @@
+# **Ethereum Batch Transfer SDK**
+
+## **Overview**
+
+The **Ethereum Batch Transfer SDK** simplifies the process of transferring **ERC-20 tokens** and **native Ethereum (ETH)** to **multiple recipients** in a single transaction. By bundling transactions, it helps save on **gas fees** and improves transaction efficiency.
+
+### **Problem Statement**
+
+Transferring tokens or native Ethereum (ETH) to multiple addresses is often inefficient and costly, especially when multiple transactions incur separate gas fees. This SDK aims to **optimize the process** by allowing **batch transfers** of tokens and ETH in a single operation, making it more **cost-effective** and **convenient**.
+
+---
+
+## **System Flow**
+
+1. **User Inputs**:
+   - The user provides **recipient addresses** and **amounts** of ERC-20 tokens or ETH.
+
+2. **Gas Estimation**:
+   - The SDK estimates the **gas fees** required for the batch transfer and notifies the user of the estimated cost in both **ETH** and **USD**.
+
+3. **User Confirmation**:
+   - The user is asked for **confirmation** to proceed with the batch transfer.
+
+4. **Token Approval**:
+   - For ERC-20 tokens, the SDK calls the **approve** method to allow the contract to transfer tokens on behalf of the user.
+
+5. **Batch Transfer Execution**:
+   - The SDK sends the batch transfer of **ERC-20 tokens** or **ETH** to all recipients in one transaction.
+
+---
+
+## **Features**
+
+- **Batch Transfer of ERC-20 Tokens**: Send ERC-20 tokens to multiple recipients with one transaction.
+- **Batch Transfer of Native Ethereum (ETH)**: Transfer ETH to multiple addresses with a single transaction.
+- **Gas Estimation**: Calculate the gas required for the batch transfer.
+- **User Interaction**: Confirm the transfer before executing to ensure control over large transactions.
+- **Cross-platform Support**: Works with both **ERC-20 tokens** and **native Ethereum (ETH)**.
+
+---
+
+## **Functionality**
+
+### **1. `batchTransferERC20(recipients, amounts)`**
+
+Transfers **ERC-20 tokens** to multiple recipients in a single transaction.
+
+**Parameters**:
+- `recipients`: Array of recipient addresses.
+- `amounts`: Array of amounts to send to each recipient.
+
+**Response**:
+- **Success**: Returns the transaction hash and logs completion.
+- **Error**: Throws an error if invalid recipients or amounts are provided.
+
+#### **Example**:
+
+```javascript
+const recipients = ["0xRecipient1", "0xRecipient2"];
+const amounts = [10, 5];
+await sdk.batchTransferERC20(recipients, amounts);
 Transferring tokens and native Ethereum (ETH) across multiple recipients can be a tedious and expensive process when done individually. With multiple gas fees for each transaction, it becomes inefficient and costly.
 
 The Ethereum Batch Transfer SDK solves this problem by enabling batch transfers of ERC-20 tokens and native Ethereum (ETH) in one single transaction, thereby reducing transaction costs and gas fees. It provides a unified API to send multiple transactions to different addresses, making it easy to send tokens or ETH to multiple users at once.
