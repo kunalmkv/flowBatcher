@@ -1,0 +1,28 @@
+{
+  "name": "flowbatcher",
+  "version": "1.0.0",
+  "description": "Save gas by batching multiple ETH and ERC-20 transactions into a single operation, optimizing efficiency and reducing costs.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kunalmkv/flowBatcher.git"
+  },
+  "keywords": [
+    "ethereum",
+    "batcher",
+    "erc20",
+    "ETH"
+  ],
+  "author": "kunalmkv",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kunalmkv/flowBatcher/issues"
+  },
+  "homepage": "https://github.com/kunalmkv/flowBatcher#readme"
+}
