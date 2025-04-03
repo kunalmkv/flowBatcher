@@ -7,7 +7,9 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "mocha 'tests/sdk.test.js' --timeout 150000 --exit",
+    "test:sdk": "mocha 'tests/sdk.test.js' --timeout 150000 --exit",
+    "test:utils": "mocha 'tests/util.test.js' --timeout 150000 --exit",
+    "test:lib": "mocha 'tests/lib.test.js' --timeout 150000 --exit",
     "prettier": "prettier . --write",
     "lint": "eslint . --max-warnings=0"
   },
