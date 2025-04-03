@@ -5,7 +5,8 @@ This SDK simplifies the process of transferring ###ERC-20 tokens and native ###E
 
 ## Problem Statement
 Transferring tokens or native Ethereum (ETH) to multiple addresses is often inefficient and costly, especially when multiple transactions incur separate gas fees. This SDK optimizes the process by allowing batch transfers of tokens and ETH in a single operation, making it more cost-effective and convenient.
-![Alt Text](https://drive.google.com/file/d/1B163ytd5UgLzHEJK2RyJgxP_njoHKf4D/view?usp=sharing)
+<img src="/src/images/flowBatcher.png">
+)
 
 
 ## System Flow
