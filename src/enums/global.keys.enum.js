@@ -3,10 +3,10 @@
  */
 
 const globalKeysEnum = Object.freeze({
-   PROVIDER: "provider",
-    SIGNER: "signer",
-    BATCH_TRANSFER_CONTRACT: "batchTransferContract",
-    ERC20_CONTRACT: "erc20Contract",
+  PROVIDER: "provider",
+  SIGNER: "signer",
+  BATCH_TRANSFER_CONTRACT: "batchTransferContract",
+  ERC20_CONTRACT: "erc20Contract",
 })
 
 module.exports = globalKeysEnum
