@@ -3,6 +3,29 @@
 ## Overview
 This SDK simplifies the process of transferring ERC-20 tokens and native Ethereum (ETH) to multiple recipients in a single transaction. By bundling transactions, it helps save on gas fees and improves transaction efficiency.
 
+## Getting Started
+### Installation
+To use the Ethereum Batch Transfer SDK, follow these steps:
+
+#### **Clone the Repository:**
+```bash
+git clone https://github.com/your-username/ethereum-batch-transfer-sdk.git
+cd flowBatcher
+```
+
+#### **Install Dependencies:**
+```bash
+npm install
+```
+
+#### **Set up Environment Variables:**
+Create a `.env` file in the root of the project with your Ethereum node URL and wallet private key:
+```plaintext
+ETH_NODE_URL=https://your-ethereum-node-url
+WALLET_PRIVATE_KEY=your-private-key
+```
+
+
 ## Problem Statement
 Transferring tokens or native Ethereum (ETH) to multiple addresses is often inefficient and costly, especially when multiple transactions incur separate gas fees. This SDK optimizes the process by allowing batch transfers of tokens and ETH in a single operation, making it more cost-effective and convenient.
 
@@ -123,28 +146,6 @@ Estimates the gas fees for the batch transfer of ERC-20 tokens or native ETH.
 Proceed with ERC-20 Batch Transfer? (yes/no):
 ````
 
-
-## Getting Started
-### Installation
-To use the Ethereum Batch Transfer SDK, follow these steps:
-
-#### **Clone the Repository:**
-```bash
-git clone https://github.com/your-username/ethereum-batch-transfer-sdk.git
-cd ethereum-batch-transfer-sdk
-```
-
-#### **Install Dependencies:**
-```bash
-npm install
-```
-
-#### **Set up Environment Variables:**
-Create a `.env` file in the root of the project with your Ethereum node URL and wallet private key:
-```plaintext
-ETH_NODE_URL=https://your-ethereum-node-url
-WALLET_PRIVATE_KEY=your-private-key
-```
 
 ## Example Usage
 ```javascript
