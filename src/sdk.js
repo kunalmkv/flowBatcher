@@ -1,69 +1,72 @@
-const { ethers } = require('ethers');
-const BatchingContract = require('./batching.contract');
+const {ethers} = require("ethers");
+
+const ethersLib= require("./lib/ethers.lib.src.js");
+
+const erc20ContractABI = require("./abis/erc20.token.abi.json");
+const batchTransferContractABI = require("./abis/batch.transfer.abi.json");
+
+const { estimateGasFees } = require("./gas.estimator");
+
+const { promptUser } = require("./utils/transaction.utils");
+const generalUseUtil= require("./utils/general.use.util");
+
+const globalKeysEnum= require("./enums/global.keys.enum");
 
 class SDK {
     constructor(provider, signer, config = {}) {
-        this.provider = provider;
-        this.signer = signer;
-        this.config = config || {};
-        this.batchContract = new BatchingContract(provider, signer, "0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761");
+        generalUseUtil.setGlobalKey((globalKeysEnum.PROVIDER), provider);
+        generalUseUtil.setGlobalKey(globalKeysEnum.SIGNER, signer);
+        generalUseUtil.setGlobalKey(globalKeysEnum.BATCH_TRANSFER_CONTRACT, ethersLib.createContract(signer,config.batchContractAddress,batchTransferContractABI));
+        generalUseUtil.setGlobalKey(globalKeysEnum.ERC20_CONTRACT, ethersLib.createContract(signer,config.tokenAddress,erc20ContractABI));
     }
 
-    // Send native ETH
-    async sendETH(recipient, amount) {
-        const tx = await this.signer.sendTransaction({
-            to: recipient,
-            value: ethers.parseEther(amount)
-        });
-        return tx;
-    }
+    async batchTransferERC20(recipients, amounts) {
+        const totalAmount = amounts.reduce((sum, val) => sum + val, 0);
+        const batchContract = generalUseUtil.getGlobalKey(globalKeysEnum.BATCH_TRANSFER_CONTRACT);
+        const erc20Contract = generalUseUtil.getGlobalKey(globalKeysEnum.ERC20_CONTRACT);
 
-    // Send ERC-20 tokens
-    async sendERC20(recipient, amount, tokenAddress) {
-        const tokenAbi = require('./abis/erc20.token.abi.json');
-        const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, this.signer);
-        const tx = await tokenContract.transfer(recipient, ethers.parseUnits(amount, 18));
-        return tx;
-    }
+        // Approve tokens first
+        await ethersLib.approveTokens(batchContract.target, totalAmount);
 
-    // Execute a batch of transactions (ETH or ERC-20)
-    async executeBatch(recipients, amounts, tokenAddress = null) {
-        if (tokenAddress) {
-            // Send ERC-20 transactions in batch
-            return this.batchContract.executeBatchTransactions(recipients, amounts, tokenAddress);
-        } else {
-            // Send ETH transactions in batch
-            for (let i = 0; i < recipients.length; i++) {
-                await this.sendETH(recipients[i], amounts[i]);
-            }
-            return Promise.resolve({});  // Empty transaction object for ETH
+        // Estimate gas fees
+        const gasEstimate = await estimateGasFees(recipients, amounts,generalUseUtil.getGlobalKey(globalKeysEnum.ERC20_CONTRACT).target);
+        console.log("\n🚨 GAS FEE ESTIMATE FOR ERC-20 BATCH TRANSFER:");
+        console.log(`- Estimated Gas: ${gasEstimate.estimatedGas}`);
+        console.log(`- Gas Price (gwei): ${gasEstimate.gasPrice}`);
+        console.log(`- Estimated Cost (ETH): ${gasEstimate.estimatedCost}\n`);
+
+        // Confirm from user
+        const confirm = await promptUser("Proceed with ERC-20 Batch Transfer? (yes/no): ");
+        if (confirm.toLowerCase() !== "yes") {
+            console.log("🚫 Transaction cancelled by user.");
+            return;
         }
+        console.log(erc20Contract.target, "erc20Contract.addressq2323")
+        console.log(erc20Contract, "erc20Contract.addresserc20Contract.addresserc20Contract.address")
+        const tx = await ethersLib.executeBatchTransactions(recipients, amounts, erc20Contract.target);
+        console.log("Batch ERC-20 Transfer tx hash:", tx.hash);
+        await tx.wait();
+        console.log("✅ ERC-20 Batch Transfer completed!");
     }
 
-    // Estimate gas for ETH transaction
-    async estimateETHGas(recipient, amount) {
-        const tx = {
-            to: recipient,
-            value: ethers.parseEther(amount)
-        };
-        const gasEstimate = await this.signer.estimateGas(tx);
-        return gasEstimate;
-    }
+    async batchTransferNative(recipients, amounts) {
+        const gasEstimate = await estimateGasFees( recipients, amounts, ethers.ZeroAddress, true);
 
-    // Estimate gas for ERC-20 transaction
-    async estimateERC20Gas(tokenAddress, recipient, amount) {
-        const tokenAbi = [
-            "function transfer(address recipient, uint256 amount) public returns (bool)"
-        ];
-        const tokenContract = new ethers.Contract(tokenAddress, tokenAbi, this.signer);
-        const gasEstimate = await tokenContract.estimateGas.transfer(recipient, ethers.parseUnits(amount, 18));
-        return gasEstimate;
-    }
+        console.log("\n🚨 GAS FEE ESTIMATE FOR NATIVE ETH BATCH TRANSFER:");
+        console.log(`- Estimated Gas: ${gasEstimate.estimatedGas}`);
+        console.log(`- Gas Price (gwei): ${gasEstimate.gasPrice}`);
+        console.log(`- Estimated Cost (ETH): ${gasEstimate.estimatedCost}\n`);
 
-    // Get the current gas price
-    async estimateGasPrice() {
-        const gasPrice = await this.provider.getGasPrice();
-        return gasPrice;
+        const confirm = await promptUser("Proceed with Native ETH Batch Transfer? (yes/no): ");
+        if (confirm.toLowerCase() !== "yes") {
+            console.log("🚫 Transaction cancelled by user.");
+            return;
+        }
+       const batchContract = generalUseUtil.getGlobalKey("batchContract");
+        const tx = await ethersLib.executeBatchTransactions(recipients, amounts, ethers.ZeroAddress, true);
+        console.log("Batch Native ETH Transfer tx hash:", tx.hash);
+        await tx.wait();
+        console.log("✅ Native ETH Batch Transfer completed!");
     }
 }
 

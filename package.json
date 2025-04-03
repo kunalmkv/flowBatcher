@@ -24,5 +24,9 @@
   "bugs": {
     "url": "https://github.com/kunalmkv/flowBatcher/issues"
   },
-  "homepage": "https://github.com/kunalmkv/flowBatcher#readme"
+  "homepage": "https://github.com/kunalmkv/flowBatcher#readme",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "ethers": "^6.13.5"
+  }
 }
