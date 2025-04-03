@@ -1,12 +1,13 @@
-import resolve from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
+// rollup.config.js
+const resolve = require("@rollup/plugin-node-resolve")
+const commonjs = require("@rollup/plugin-commonjs")
 
-export default {
-    input: 'src/sdk.js',  // Main entry point for the SDK
-    output: {
-        file: 'dist/ethers-batch-sdk.js',
-        format: 'umd',
-        name: 'BatchSDK',
-    },
-    plugins: [resolve(), commonjs()],
-};
+module.exports = {
+  input: "src/sdk.js", // Replace with the correct entry point for your SDK
+  output: {
+    file: "dist/ethers-batch-sdk.js",
+    format: "umd", // Use 'umd' for universal module format
+    name: "BatchSDK",
+  },
+  plugins: [resolve(), commonjs()],
+}
