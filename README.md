@@ -1,10 +1,12 @@
-# Ethereum Batch Transfer SDK
+# flowBatcher SDK
 
 ## Overview
-The Ethereum Batch Transfer SDK simplifies the process of transferring ERC-20 tokens and native Ethereum (ETH) to multiple recipients in a single transaction. By bundling transactions, it helps save on gas fees and improves transaction efficiency.
+This SDK simplifies the process of transferring ###ERC-20 tokens and native ###Ethereum (ETH) to multiple recipients in a single transaction. By bundling transactions, it helps save on gas fees and improves transaction efficiency.
 
 ## Problem Statement
 Transferring tokens or native Ethereum (ETH) to multiple addresses is often inefficient and costly, especially when multiple transactions incur separate gas fees. This SDK optimizes the process by allowing batch transfers of tokens and ETH in a single operation, making it more cost-effective and convenient.
+![Alt Text](https://drive.google.com/file/d/1B163ytd5UgLzHEJK2RyJgxP_njoHKf4D/view?usp=sharing)
+
 
 ## System Flow
 1. **User Inputs**: The user provides recipient addresses and amounts of ERC-20 tokens or ETH.
