@@ -11,7 +11,7 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.node,
-        ...globals.mocha
+        ...globals.mocha,
       },
     },
     plugins: {
@@ -38,10 +38,7 @@ export default [
         {
           properties: "always",
           ignoreImports: true,
-          allow: [
-            "Web3",
-            "nft_contract_address",
-          ],
+          allow: ["Web3", "nft_contract_address"],
         },
       ],
       eqeqeq: "error", // Require strict equality `===` and `!==`

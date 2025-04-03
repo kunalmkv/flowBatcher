@@ -19,14 +19,12 @@ const logTypeEnum = require("../enums/log.type.enum")
  * @returns {void} This function doesn't return anything. It logs the message to the console.
  */
 function log(message) {
-  try{
+  try {
     if (validatorUtil.isEmpty(message)) {
       errorUtil.throwError(`Message is empty! message: ${message}`)
     }
     logWithColor(message, logTypeEnum.INFO)
-  }catch (e) {
-
-  }
+  } catch (e) {}
 }
 
 /**
@@ -46,11 +44,11 @@ function log(message) {
  * @returns {void} This function doesn't return anything. It logs the message to the console with the specified color.
  */
 function logWithColor(message, type, data = {}) {
-  try{
+  try {
     //check if message or type is empty
     if (validatorUtil.isEmpty(message) || validatorUtil.isEmpty(type)) {
       errorUtil.throwError(
-          `Message or type is empty! message: ${message} , type: ${type}`,
+        `Message or type is empty! message: ${message} , type: ${type}`,
       )
     }
 
@@ -62,7 +60,7 @@ function logWithColor(message, type, data = {}) {
 
     // eslint-disable-next-line no-console
     console.log(chalk[type](logData))
-  }catch (e) {
+  } catch (e) {
     throw e
   }
 }
