@@ -1,3 +1,14 @@
+/**
+ * Unit Tests for SDK Batch Transfer Functions
+ *It tests the following methods:
+ * - `batchTransferERC20`: Transfers ERC-20 tokens to multiple recipients in a single transaction.
+ * - Gas estimation for ERC-20 batch transfers.
+ * - User confirmation for executing batch transfers.
+ * - Error handling for invalid inputs and failed gas estimation.
+ *
+ * The tests mock contract methods, gas estimation, and user inputs using **Sinon** to ensure the SDK behaves correctly.
+ */
+
 const { expect } = require("chai")
 require("dotenv").config({ path: "./.env" })
 const sinon = require("sinon")

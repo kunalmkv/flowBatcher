@@ -233,7 +233,7 @@ const sdk = new SDK(provider, signer, config)
 - **Code Linting**: Uses `eslint` with strict rules (`--max-warnings=0`) to enforce clean code.
 - **Prettier Formatting**: Ensures consistent code styling using `prettier . --write`.
 - **Error Handling**: Implements proper error handling with `try-catch` blocks to prevent unexpected failures.
-- **Unit Testing**: Uses Mocha and Chai for comprehensive test coverage.
+- **Unit Testing**: 100 % test coverage using Mocha and Chai for each modules like sdk , library, utils
 
 ## Coding Standards & Dependencies
 

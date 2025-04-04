@@ -1,3 +1,16 @@
+/**
+ * Unit Tests for Utility Functions
+ *
+ * The functions being tested include:
+ * - `throwError`: Tests for error handling and throwing errors with appropriate messages.
+ * - `getCurrentIndianTime`: Verifies the correct retrieval of the current time in Indian Standard Time (IST).
+ * - `setGlobalKey` and `getGlobalKey`: Tests for setting and getting global keys in the application context.
+ * - `promptUser`: Simulates user input and tests the prompt functionality.
+ * - `isEmpty`: Verifies whether a given value is empty or not.
+ *
+ * The tests utilize **Mocha** for structuring the tests, **Chai** for assertions, and **Sinon** for mocking external dependencies.
+ */
+
 const { expect } = require("chai")
 const sinon = require("sinon")
 const utils = require("../src/utils") // Adjust the path based on your project structure

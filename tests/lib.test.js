@@ -1,10 +1,20 @@
+/**
+ * Unit Tests for library functions
+ *  includes the following methods:
+ * - `batchTransferERC20`: Handles ERC-20 token transfers to multiple recipients in a single transaction.
+ * - `executeBatchTransactions`: Handles both ERC-20 token and native ETH batch transfers.
+ * - Gas estimation: Tests for estimating gas fees for ERC-20 batch transfers.
+ * - User confirmation: Verifies that the user is prompted to confirm the transaction before execution.
+ * - Error handling: Tests for handling invalid input and gas estimation failures.
+ *
+ * The tests use **Sinon** for mocking external dependencies, including contract methods, gas estimation, and user inputs.
+ */
+
 const { expect } = require("chai")
 const sinon = require("sinon")
 const loggerLib = require("../src/lib/logger.lib")
-const chalk = require("chalk")
 const errorUtil = require("../src/utils/error.utils")
 const loggerColourEnum= require("../src/utils/logger.colour.enum")
-const validatorUtil = require("../src/utils/validators.utils")
 const logTypeEnum = require("../src/enums/log.type.enum")
 
 describe("Logger Library", () => {
