@@ -1,3 +1,14 @@
+/**
+ * flowBatcher SDK Example
+ *
+ * This file demonstrates how to use the flowBatcher SDK to send ERC-20 tokens and
+ * native Ethereum (ETH) to multiple recipients in a single transaction. It handles the process
+ * of creating a provider, signing transactions, and executing batch transfers efficiently.
+ *
+ * Environment variables like Ethereum node URL and wallet private key are loaded from the .env file.
+ */
+
+
 require("dotenv").config({ path: "./.env" })
 
 const { createProviderAndSigner } = require("./src/lib/ethers.lib.src")
