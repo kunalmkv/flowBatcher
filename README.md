@@ -13,14 +13,7 @@ To use the Ethereum Batch Transfer SDK, follow these steps:
 #### **Clone the Repository:**
 
 ```bash
-git clone https://github.com/your-username/ethereum-batch-transfer-sdk.git
-cd flowBatcher
-```
-
-#### **Install Dependencies:**
-
-```bash
-npm install
+npm i flowbatcher 
 ```
 
 #### **Set up Environment Variables:**
