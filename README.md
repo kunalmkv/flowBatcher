@@ -5,12 +5,10 @@
 This SDK simplifies the process of transferring ERC-20 tokens and native Ethereum (ETH) to multiple recipients in a single transaction. By bundling transactions, it helps save on gas fees and improves transaction efficiency.
 
 ## Getting Started
-
-### Installation
-
+👉 click:   [npmjs/flowbatcher](https://www.npmjs.com/package/flowbatche)
 To use the Ethereum Batch Transfer SDK, follow these steps:
 
-#### **Clone the Repository:**
+### Installation
 
 ```bash
 npm i flowbatcher 
