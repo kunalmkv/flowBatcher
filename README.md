@@ -5,12 +5,11 @@
 This SDK simplifies the process of transferring ERC-20 tokens and native Ethereum (ETH) to multiple recipients in a single transaction. By bundling transactions, it helps save on gas fees and improves transaction efficiency.
 
 ## Getting Started
-
-### Installation
+👉 click:   [npmjs/flowbatcher](https://www.npmjs.com/package/flowbatche)
 
 To use the Ethereum Batch Transfer SDK, follow these steps:
 
-#### **Clone the Repository:**
+### Installation
 
 ```bash
 npm i flowbatcher 
@@ -242,6 +241,62 @@ const sdk = new SDK(provider, signer, config)
   - `dotenv`: Manages environment variables.
   -
 
-## License
+## Smart Contract Used
 
-This SDK is open-source and available under the MIT License.
+```solidity
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.10;
+
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+contract BatchTransfer is ReentrancyGuard {
+    event ERC20Transfer(address indexed token, address indexed from, address indexed to, uint256 amount);
+    event NativeTransfer(address indexed from, address indexed to, uint256 amount);
+
+    error ArraysLengthMismatch(uint256 recipientsLength, uint256 amountsLength);
+
+    /**
+     * @notice Batch transfer of ERC-20 tokens or native Ether to multiple recipients.
+     * @param recipients List of recipient addresses.
+     * @param amounts List of amounts to be transferred.
+     * @param tokenAddress Address of the ERC-20 token. Use address(0) for native Ether transfers.
+     */
+    function batchTransfer(
+        address[] calldata recipients,
+        uint256[] calldata amounts,
+        address tokenAddress
+    ) external payable nonReentrant {
+        if (recipients.length != amounts.length) {
+            revert ArraysLengthMismatch(recipients.length, amounts.length);
+        }
+
+        if (tokenAddress == address(0)) {
+            uint256 totalAmount = msg.value;
+            uint256 totalRecipients = recipients.length;
+
+            if (totalAmount != sumAmounts(amounts)) {
+                revert ArraysLengthMismatch(recipients.length, amounts.length);
+            }
+
+            for (uint256 i = 0; i < totalRecipients; i++) {
+                payable(recipients[i]).transfer(amounts[i]);
+                emit NativeTransfer(msg.sender, recipients[i], amounts[i]);
+            }
+
+        } else {
+            IERC20 token = IERC20(tokenAddress);
+            for (uint256 i = 0; i < recipients.length; i++) {
+                token.transferFrom(msg.sender, recipients[i], amounts[i]);
+                emit ERC20Transfer(tokenAddress, msg.sender, recipients[i], amounts[i]);
+            }
+        }
+    }
+
+    function sumAmounts(uint256[] calldata amounts) private pure returns (uint256 total) {
+        for (uint256 i = 0; i < amounts.length; i++) {
+            total += amounts[i];
+        }
+    }
+}
+```
