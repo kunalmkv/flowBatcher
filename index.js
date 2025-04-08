@@ -34,7 +34,6 @@ const sdk = new SDK(provider, signer, config)
       "0x50da5C365a08169A9101C1969492540dA937071F",
     ]
     const amounts = [1, 2]
-    validatorsUtil.isEmpty()
     await sdk.batchTransferERC20(recipients, amounts)
 
     // Example to send Native ETH in batch

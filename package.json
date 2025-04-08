@@ -1,6 +1,6 @@
 {
   "name": "flowbatcher",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Save gas by batching multiple ETH and ERC-20 transactions into a single operation, optimizing efficiency and reducing costs.",
   "main": "index.js",
   "directories": {
