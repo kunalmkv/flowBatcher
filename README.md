@@ -58,12 +58,6 @@ Transferring tokens or native Ethereum (ETH) to multiple addresses is often inef
 - The contract verifies that the total **Ether sent (`msg.value`) matches the expected sum** of amounts.
 - If the user sends more or less ETH than required, the transaction is **reverted** to prevent errors or fund loss.
 
-## Efficiency Enhancements
-
-### **Optimized Token Transfer**
-
-- Instead of using `transferFrom` (which requires prior approval), the contract **uses `transfer` when the contract itself is the sender**, reducing gas costs.
-- `IERC20(token).transferFrom(msg.sender, recipients[i], amounts[i]);` was changed to `token.transferFrom(msg.sender, recipients[i], amounts[i]);`.
 
 ### **Helper Function (sumAmounts)**
 
